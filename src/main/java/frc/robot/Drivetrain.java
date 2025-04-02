@@ -5,11 +5,12 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.wpilibj.AnalogGyro;
+// import edu.wpi.first.wpilibj.AnalogGyro;
 
 /** Represents a swerve drive style drivetrain. */
 public class Drivetrain {
@@ -21,12 +22,12 @@ public class Drivetrain {
   private final Translation2d m_backLeftLocation = new Translation2d(-0.381, 0.381);
   private final Translation2d m_backRightLocation = new Translation2d(-0.381, -0.381);
 
-  private final SwerveModule m_frontLeft = new SwerveModule(6, 5, 0, 1, 2, 3);
-  private final SwerveModule m_frontRight = new SwerveModule(8, 7, 4, 5, 6, 7);
-  private final SwerveModule m_backLeft = new SwerveModule(4, 3, 8, 9, 10, 11);
-  private final SwerveModule m_backRight = new SwerveModule(2, 1, 12, 13, 14, 15);
+  private final SwerveModule m_frontLeft = new SwerveModule(7, 8, 0, 1, 2, 3);
+  private final SwerveModule m_frontRight = new SwerveModule(4, 3, 4, 5, 6, 7);
+  private final SwerveModule m_backLeft = new SwerveModule(1, 2, 8, 9, 10, 11);
+  private final SwerveModule m_backRight = new SwerveModule(5, 6, 12, 13, 14, 15);
 
-  private final AnalogGyro m_gyro = new AnalogGyro(0);
+  // private final AnalogGyro m_gyro = new AnalogGyro(0);
 
   private final SwerveDriveKinematics m_kinematics =
       new SwerveDriveKinematics(
@@ -35,7 +36,8 @@ public class Drivetrain {
   private final SwerveDriveOdometry m_odometry =
       new SwerveDriveOdometry(
           m_kinematics,
-          m_gyro.getRotation2d(),
+          // m_gyro.getRotation2d(),
+          new Rotation2d(),
           new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
             m_frontRight.getPosition(),
@@ -44,7 +46,7 @@ public class Drivetrain {
           });
 
   public Drivetrain() {
-    m_gyro.reset();
+    // m_gyro.reset();
   }
 
   /**
@@ -62,7 +64,8 @@ public class Drivetrain {
             ChassisSpeeds.discretize(
                 fieldRelative
                     ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                        xSpeed, ySpeed, rot, m_gyro.getRotation2d())
+                        // xSpeed, ySpeed, rot, m_gyro.getRotation2d())
+                        xSpeed, ySpeed, rot, new Rotation2d())
                     : new ChassisSpeeds(xSpeed, ySpeed, rot),
                 periodSeconds));
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
@@ -75,7 +78,8 @@ public class Drivetrain {
   /** Updates the field relative position of the robot. */
   public void updateOdometry() {
     m_odometry.update(
-        m_gyro.getRotation2d(),
+        // m_gyro.getRotation2d(),
+        new Rotation2d(),
         new SwerveModulePosition[] {
           m_frontLeft.getPosition(),
           m_frontRight.getPosition(),
