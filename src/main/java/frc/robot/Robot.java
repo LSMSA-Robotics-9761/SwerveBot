@@ -8,17 +8,17 @@ import com.studica.frc.AHRS;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Joystick;
-// import edu.wpi.first.wpilibj.AnalogGyro;
-import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends TimedRobot {
-  private final XboxController m_controller = new XboxController(0);
-  private final Drivetrain m_swerve = new Drivetrain();
+  AHRS ahrs;
+
+  private XboxController m_controller = new XboxController(0);
+  private Drivetrain m_swerve;
 
   // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
   private final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(3);
@@ -29,10 +29,12 @@ public class Robot extends TimedRobot {
   // AHRS ahrs = new AHRS(SPI.Port.kMXP);
   // public final AHRS ahrs = new AHRS(AHRS.NavXComType.kMXP_SPI,
   // AHRS.NavXUpdateRate.k50Hz);
-  AHRS ahrs;
 
-  @Override
-  public void robotInit() {
+  public Robot() {
+    DataLogManager.start();
+    DriverStation.startDataLog(DataLogManager.getLog());
+
+    m_swerve = new Drivetrain();
     try {
       /***********************************************************************
        * navX-MXP: - Communication via RoboRIO MXP (SPI, I2C) and USB. - See
@@ -63,7 +65,7 @@ public class Robot extends TimedRobot {
 
   public void teleopInit() {
     System.out.println("INIT!");
-    ahrs.reset();
+    // ahrs.reset();
   }
 
   @Override
