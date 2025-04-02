@@ -30,7 +30,7 @@ public class Drivetrain {
   private final SwerveModule m_backLeft = new SwerveModule(1, 2);
   private final SwerveModule m_backRight = new SwerveModule(5, 6);
 
-  AHRS ahrs;
+  AHRS ahrs = new AHRS(AHRS.NavXComType.kMXP_SPI);
 
   private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
       m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
