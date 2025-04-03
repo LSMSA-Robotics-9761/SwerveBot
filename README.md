@@ -2,7 +2,7 @@
 
 For FRC Team 9761's 2025 robot, which utilizies a swerve drive.
 
-This is a modified version of the [WPILib SwerveBot example project](https://github.com/wpilibsuite/allwpilib/tree/main/wpilibjExamples/src/main/java/edu/wpi/first/wpilibj/examples/swervebot), with changes that allow us to use different motors, encoders and gyroscope, which are listed below.
+This is a modified version of the [REVrobotics MAXSwerve Java Template](https://github.com/REVrobotics/MAXSwerve-Java-Template), with a few changes for different motors, PID tuning, CANcoders, gyroscope, which are listed below.
 
 ### Robot Parts and Dependencies
 
