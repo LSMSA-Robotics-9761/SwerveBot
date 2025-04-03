@@ -40,20 +40,30 @@ public final class Constants {
         new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
 
     // Angular offsets of the modules relative to the chassis in radians
-    public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2;
-    public static final double kFrontRightChassisAngularOffset = 0;
-    public static final double kBackLeftChassisAngularOffset = Math.PI;
-    public static final double kBackRightChassisAngularOffset = Math.PI / 2;
+    // public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2;
+    // public static final double kFrontRightChassisAngularOffset = 0;
+    // public static final double kBackLeftChassisAngularOffset = Math.PI;
+    // public static final double kBackRightChassisAngularOffset = Math.PI / 2;
+
+    /* Values are in radians */
+    // public static final double kFrontLeftChassisAngularOffset = 0.160;
+    // public static final double kFrontRightChassisAngularOffset = 1.045;
+    // public static final double kBackLeftChassisAngularOffset = -0.015;
+    // public static final double kBackRightChassisAngularOffset = -0.141;
+    public static final double kFrontLeftChassisAngularOffset = -2.200;
+    public static final double kFrontRightChassisAngularOffset = 1.154;
+    public static final double kBackLeftChassisAngularOffset = 3.063;
+    public static final double kBackRightChassisAngularOffset = -2.761;
 
     // SPARK MAX CAN IDs
     public static final int kFrontLeftDrivingCanId = 4;
     public static final int kRearLeftDrivingCanId = 7;
-    public static final int kFrontRightDrivingCanId = 6;
+    public static final int kFrontRightDrivingCanId = 5;
     public static final int kRearRightDrivingCanId = 1;
 
     public static final int kFrontLeftTurningCanId = 3;
     public static final int kRearLeftTurningCanId = 8;
-    public static final int kFrontRightTurningCanId = 5;
+    public static final int kFrontRightTurningCanId = 6;
     public static final int kRearRightTurningCanId = 2;
 
     public static final int kFrontLeftTurningAbsoluteCanId = 14;
