@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.revrobotics.spark.SparkClosedLoopController;
@@ -74,9 +75,13 @@ public class SwerveModule {
     // m_desiredState.angle = new Rotation2d(m_turningEncoder.getPosition());
     // m_desiredState.angle = new
     // Rotation2d(m_turningAbsoluteEncoder.getAbsolutePosition().getValue().in(Radians));
-    m_desiredState.angle = new Rotation2d(m_turningAbsoluteEncoder.getAbsolutePosition().getValueAsDouble()
-        - (Radians.of(m_chassisAngularOffset).in(Rotations)));
+    m_desiredState.angle = new Rotation2d(
+        Units.rotationsToRadians(m_turningAbsoluteEncoder.getAbsolutePosition().getValueAsDouble())
+            - (Radians.of(m_chassisAngularOffset).in(Radians)));
+
     m_drivingEncoder.setPosition(0);
+
+    m_turningEncoder.setPosition(m_turningAbsoluteEncoder.getPosition().getValue().in(Radians) - chassisAngularOffset);
   }
 
   /**
@@ -109,10 +114,13 @@ public class SwerveModule {
     SmartDashboard.putNumber((keyPrefix + " absEncoderOffsettedRot"),
         m_turningAbsoluteEncoder.getAbsolutePosition().getValueAsDouble()
             - (Radians.of(m_chassisAngularOffset).in(Rotations)));
+    SmartDashboard.putNumber((keyPrefix + " absEncoderOffsettedRad"),
+        m_turningAbsoluteEncoder.getAbsolutePosition().getValue().in(Radians)
+            - (Radians.of(m_chassisAngularOffset).in(Radians)));
+
     SmartDashboard.putNumber((keyPrefix + " encoderRad"),
         m_turningEncoder.getPosition());
-    // SmartDashboard.putNumber((keyPrefix + " absEncoderOffsettedRad"),
-    // m_turningAbsoluteEncoder.getAbsolutePosition().getValue().in(Radians));
+
 
     // Apply chassis angular offset to the encoder position to get the position
     // relative to the chassis.
@@ -150,23 +158,25 @@ public class SwerveModule {
     // Apply chassis angular offset to the desired state.
     SwerveModuleState correctedDesiredState = new SwerveModuleState();
     correctedDesiredState.speedMetersPerSecond = desiredState.speedMetersPerSecond;
-    correctedDesiredState.angle = desiredState.angle.plus(Rotation2d.fromRadians(m_chassisAngularOffset));
+    correctedDesiredState.angle = desiredState.angle;
+    // correctedDesiredState.angle = desiredState.angle.plus(Rotation2d.fromRadians(m_chassisAngularOffset));
 
     SmartDashboard.putString(position + " cDS", correctedDesiredState.toString());
 
     // Optimize the reference state to avoid spinning further than 90 degrees.
-    correctedDesiredState
-        // // .optimize(new
-        // //
-        // Rotation2d(m_turningAbsoluteEncoder.getAbsolutePosition().getValue().in(Radians)));
-        .optimize(new Rotation2d(m_turningEncoder.getPosition() * 2 * Math.PI
-            - (Radians.of(m_chassisAngularOffset).in(Rotations))));
+    // correctedDesiredState
+    // .optimize(new Rotation2d(m_turningEncoder.getPosition() -
+    // m_chassisAngularOffset));
+
+    // // .optimize(new
+    // //
+    // Rotation2d(m_turningAbsoluteEncoder.getAbsolutePosition().getValue().in(Radians)));
 
     SmartDashboard.putString(position + " cDS", correctedDesiredState.toString());
 
     // Command driving and turning SPARKS towards their respective setpoints.
     m_drivingClosedLoopController.setReference(correctedDesiredState.speedMetersPerSecond, ControlType.kVelocity);
-    m_turningClosedLoopController.setReference(correctedDesiredState.angle.getRadians(), ControlType.kPosition);
+    m_turningClosedLoopController.setReference(-correctedDesiredState.angle.getRadians(), ControlType.kPosition);
     // m_turningClosedLoopController.setReference(correctedDesiredState.angle.getDegrees(),
     // ControlType.kPosition);
 

@@ -50,10 +50,14 @@ public final class Constants {
     // public static final double kFrontRightChassisAngularOffset = 1.045;
     // public static final double kBackLeftChassisAngularOffset = -0.015;
     // public static final double kBackRightChassisAngularOffset = -0.141;
-    public static final double kFrontLeftChassisAngularOffset = -2.200;
-    public static final double kFrontRightChassisAngularOffset = 1.154;
-    public static final double kBackLeftChassisAngularOffset = 3.063;
-    public static final double kBackRightChassisAngularOffset = -2.761;
+    // public static final double kFrontLeftChassisAngularOffset = -2.200;
+    // public static final double kFrontRightChassisAngularOffset = 1.154;
+    // public static final double kBackLeftChassisAngularOffset = 3.063;
+    // public static final double kBackRightChassisAngularOffset = -2.761;
+    public static final double kFrontLeftChassisAngularOffset = -0.349748;
+    public static final double kFrontRightChassisAngularOffset = -0.905049;
+    public static final double kBackLeftChassisAngularOffset = -1.647495;
+    public static final double kBackRightChassisAngularOffset = -2.955981;
 
     // SPARK MAX CAN IDs
     public static final int kFrontLeftDrivingCanId = 4;
