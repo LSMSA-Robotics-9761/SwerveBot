@@ -26,13 +26,8 @@ public class AutoDrive extends Command {
     drive.drive(.5, 0, 0, false);
   }
 
-  // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
-
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
+  public void end(boolean interrupted) {
+    drive.drive(0,0,0, false);
   }
 }

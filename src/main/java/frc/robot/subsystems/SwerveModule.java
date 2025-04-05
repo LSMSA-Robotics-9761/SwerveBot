@@ -121,7 +121,6 @@ public class SwerveModule {
     SmartDashboard.putNumber((keyPrefix + " encoderRad"),
         m_turningEncoder.getPosition());
 
-
     // Apply chassis angular offset to the encoder position to get the position
     // relative to the chassis.
     return new SwerveModuleState(m_drivingEncoder.getVelocity(),
@@ -159,7 +158,8 @@ public class SwerveModule {
     SwerveModuleState correctedDesiredState = new SwerveModuleState();
     correctedDesiredState.speedMetersPerSecond = desiredState.speedMetersPerSecond;
     correctedDesiredState.angle = desiredState.angle;
-    // correctedDesiredState.angle = desiredState.angle.plus(Rotation2d.fromRadians(m_chassisAngularOffset));
+    // correctedDesiredState.angle =
+    // desiredState.angle.plus(Rotation2d.fromRadians(m_chassisAngularOffset));
 
     SmartDashboard.putString(position + " cDS", correctedDesiredState.toString());
 
@@ -167,6 +167,9 @@ public class SwerveModule {
     // correctedDesiredState
     // .optimize(new Rotation2d(m_turningEncoder.getPosition() -
     // m_chassisAngularOffset));
+    
+    // correctedDesiredState
+    //     .optimize(new Rotation2d(m_turningEncoder.getPosition() * 2 * Math.PI));
 
     // // .optimize(new
     // //
