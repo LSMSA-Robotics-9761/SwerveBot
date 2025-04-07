@@ -37,8 +37,8 @@ public class Elevator extends SubsystemBase {
         m_armEncoder = m_armMotor.getEncoder();
         m_armPID = m_armMotor.getClosedLoopController();
 
-        // m_armMotor.configure(Configs.MAXSwerveModule.armConfig, ResetMode.kResetSafeParameters,
-        //         PersistMode.kPersistParameters);
+        m_armMotor.configure(Configs.MAXSwerveModule.armConfig, ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
     }
 
     public void moveArm(double amount) {

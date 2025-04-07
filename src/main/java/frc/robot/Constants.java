@@ -28,6 +28,9 @@ public final class Constants {
     public static final double kMaxSpeedMetersPerSecond = 4.8;
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
+    // IN DEGREES
+    public static final double kGyroOffset = 0;
+
     // Chassis configuration
     public static final double kTrackWidth = Units.inchesToMeters(22.75);
     // Distance between centers of right and left wheels on robot
@@ -54,10 +57,10 @@ public final class Constants {
     // public static final double kFrontRightChassisAngularOffset = 1.154;
     // public static final double kBackLeftChassisAngularOffset = 3.063;
     // public static final double kBackRightChassisAngularOffset = -2.761;
-    public static final double kFrontLeftChassisAngularOffset = -0.349748;
-    public static final double kFrontRightChassisAngularOffset = -0.905049;
-    public static final double kBackLeftChassisAngularOffset = -1.647495;
-    public static final double kBackRightChassisAngularOffset = -2.955981;
+    public static final double kFrontLeftChassisAngularOffset = -0.349748 - 0.14;
+    public static final double kFrontRightChassisAngularOffset = -0.905049 + 0.19;
+    public static final double kBackLeftChassisAngularOffset = -1.647495 + 0.21;
+    public static final double kBackRightChassisAngularOffset = -2.955981 + 0.21;
 
     // SPARK MAX CAN IDs
     public static final int kFrontLeftDrivingCanId = 4;

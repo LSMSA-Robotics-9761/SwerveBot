@@ -18,6 +18,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.OIConstants;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -52,14 +53,14 @@ public class DriveSubsystem extends SubsystemBase {
 
   // Odometry class for tracking robot pose
   // SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
-  //     DriveConstants.kDriveKinematics,
-  //     Rotation2d.fromDegrees(m_gyro.getAngle()),
-  //     new SwerveModulePosition[] {
-  //         m_frontLeft.getPosition(),
-  //         m_frontRight.getPosition(),
-  //         m_rearLeft.getPosition(),
-  //         m_rearRight.getPosition()
-  //     });
+  // DriveConstants.kDriveKinematics,
+  // Rotation2d.fromDegrees(m_gyro.getAngle()),
+  // new SwerveModulePosition[] {
+  // m_frontLeft.getPosition(),
+  // m_frontRight.getPosition(),
+  // m_rearLeft.getPosition(),
+  // m_rearRight.getPosition()
+  // });
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
@@ -71,18 +72,21 @@ public class DriveSubsystem extends SubsystemBase {
   public void periodic() {
     // Update the odometry in the periodic block
     // m_odometry.update(
-    //     Rotation2d.fromDegrees(m_gyro.getAngle()),
-    //     new SwerveModulePosition[] {
-    //         m_frontLeft.getPosition(),
-    //         m_frontRight.getPosition(),
-    //         m_rearLeft.getPosition(),
-    //         m_rearRight.getPosition()
-    //     });
+    // Rotation2d.fromDegrees(m_gyro.getAngle()),
+    // new SwerveModulePosition[] {
+    // m_frontLeft.getPosition(),
+    // m_frontRight.getPosition(),
+    // m_rearLeft.getPosition(),
+    // m_rearRight.getPosition()
+    // });
     // Print SmartDashboard encoder values
     m_frontLeft.getState();
     m_frontRight.getState();
     m_rearLeft.getState();
     m_rearRight.getState();
+
+    SmartDashboard.putNumber("gyro", m_gyro.getAngle());
+    SmartDashboard.putNumber("gyroOffsetted", m_gyro.getAngle() - DriveConstants.kGyroOffset);
   }
 
   /**
@@ -91,7 +95,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @return The pose.
    */
   // public Pose2d getPose() {
-  //   return m_odometry.getPoseMeters();
+  // return m_odometry.getPoseMeters();
   // }
 
   /**
@@ -100,15 +104,15 @@ public class DriveSubsystem extends SubsystemBase {
    * @param pose The pose to which to set the odometry.
    */
   // public void resetOdometry(Pose2d pose) {
-  //   m_odometry.resetPosition(
-  //       Rotation2d.fromDegrees(m_gyro.getAngle()),
-  //       new SwerveModulePosition[] {
-  //           m_frontLeft.getPosition(),
-  //           m_frontRight.getPosition(),
-  //           m_rearLeft.getPosition(),
-  //           m_rearRight.getPosition()
-  //       },
-  //       pose);
+  // m_odometry.resetPosition(
+  // Rotation2d.fromDegrees(m_gyro.getAngle()),
+  // new SwerveModulePosition[] {
+  // m_frontLeft.getPosition(),
+  // m_frontRight.getPosition(),
+  // m_rearLeft.getPosition(),
+  // m_rearRight.getPosition()
+  // },
+  // pose);
   // }
 
   /**
@@ -136,7 +140,7 @@ public class DriveSubsystem extends SubsystemBase {
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
         fieldRelative
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
-                Rotation2d.fromDegrees(m_gyro.getAngle()))
+                Rotation2d.fromDegrees(-m_gyro.getAngle()/*  - DriveConstants.kGyroOffset */))
             : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
@@ -189,6 +193,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Zeroes the heading of the robot. */
   public void zeroHeading() {
+    System.out.println("RESET GYRO");
     m_gyro.reset();
   }
 

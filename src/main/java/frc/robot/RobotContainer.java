@@ -66,13 +66,17 @@ public class RobotContainer {
                 -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
-                // getToggleOrientationMode()), // TODO: Switch back to field relative
-                false),
+                getToggleOrientationMode()), // TODO: Switch back to field relative
+                // false),
             m_robotDrive));
     m_elevator.setDefaultCommand(new RunCommand(
         () -> m_elevator.moveArm(
             MathUtil.applyDeadband(m_elevatorCommandController.getRightX(), OIConstants.kDriveDeadband)),
         m_elevator));
+    // m_elevator.setDefaultCommand(new RunCommand(
+    //     () -> m_elevator.setPosition(
+    //         MathUtil.applyDeadband(m_elevatorCommandController.getRightY(), OIConstants.kDriveDeadband)),
+    //     m_elevator));
   }
 
   private boolean getToggleOrientationMode() {
@@ -108,33 +112,43 @@ public class RobotContainer {
     new JoystickButton(m_driverController, XboxController.Button.kRightStick.value).whileTrue(new RunCommand(
         () -> {
           m_robotDrive.zeroHeading();
+          System.out.println("zeroed field heading");
         },
         m_robotDrive));
 
-    m_elevatorCommandController.rightStick().whileTrue(new RunCommand(() -> {
-      m_elevator.resetArm();
-      System.out.println("arm RESET");
-    }, m_elevator));
-    m_elevatorCommandController.x().whileTrue(new RunCommand(() -> {
-      m_elevator.setPosition(-3.0);
-      System.out.println("elevator DOWN");
-      // .a() is Y on beau's controller
-    }, m_elevator));
-    m_elevatorCommandController.a().whileTrue(new RunCommand(() -> {
-      m_elevator.setPosition(0.0);
-      System.out.println("elevator STOP");
-      // .b() is B on beau's controller
-    }, m_elevator));
-    m_elevatorCommandController.b().whileTrue(new RunCommand(() -> {
-      m_elevator.setPosition(10.0);
-      System.out.println("elevator UP FAST");
-      // .x() is A on beau's controller
-    }, m_elevator));
-    m_elevatorCommandController.y().whileTrue(new RunCommand(() -> {
-      m_elevator.setPosition(7.0);
-      System.out.println("elevator UP");
-      // .y() is X on beau's controller
-    }, m_elevator));
+    m_elevatorCommandController.rightStick()
+        .whileTrue(new RunCommand(() -> {
+          m_elevator.resetArm();
+          System.out.println("arm RESET");
+        }, m_elevator));
+
+    m_elevatorCommandController.x()
+        .whileTrue(new RunCommand(() -> {
+          m_elevator.setPosition(-3.0);
+          System.out.println("elevator DOWN");
+          // .a() is Y on beau's controller
+        }, m_elevator));
+
+    m_elevatorCommandController.a()
+        .whileTrue(new RunCommand(() -> {
+          m_elevator.setPosition(0.0);
+          System.out.println("elevator STOP");
+          // .b() is B on beau's controller
+        }, m_elevator));
+
+    m_elevatorCommandController.b()
+        .whileTrue(new RunCommand(() -> {
+          m_elevator.setPosition(10.0);
+          System.out.println("elevator UP FAST");
+          // .x() is A on beau's controller
+        }, m_elevator));
+
+    m_elevatorCommandController.y()
+        .whileTrue(new RunCommand(() -> {
+          m_elevator.setPosition(7.0);
+          System.out.println("elevator UP");
+          // .y() is X on beau's controller
+        }, m_elevator));
 
   }
 
