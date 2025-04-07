@@ -10,6 +10,7 @@ import frc.robot.subsystems.DriveSubsystem;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class AutoDrive extends Command {
   private DriveSubsystem drive;
+
   /** Creates a new AutoDrive. */
   public AutoDrive(DriveSubsystem drive) {
     this.drive = drive;
@@ -18,7 +19,8 @@ public class AutoDrive extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -28,6 +30,6 @@ public class AutoDrive extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    drive.drive(0,0,0, false);
+    drive.drive(0, 0, 0, false);
   }
 }

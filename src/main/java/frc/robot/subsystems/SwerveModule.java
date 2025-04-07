@@ -4,42 +4,45 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.Rotations;
+
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-
-// import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.*;
-
-import com.ctre.phoenix6.hardware.CANcoder;
-import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.RelativeEncoder;
-
 import frc.robot.Configs;
 
 public class SwerveModule {
+  // Determines which of the four swerve modules on the robot the instance is. Can
+  // be "fr", "fl", "br", "bl"
   private final String position;
 
   private final SparkMax m_drivingSpark;
   private final SparkMax m_turningSpark;
 
+  // Relative encoders for each of the driving and turning motors
   private final RelativeEncoder m_drivingEncoder;
   private final RelativeEncoder m_turningEncoder;
 
+  // Absolute encoders for the turning motor. Used to straighten the wheels after
+  // power cycles
   private final CANcoder m_turningAbsoluteEncoder;
 
   private final SparkClosedLoopController m_drivingClosedLoopController;
   private final SparkClosedLoopController m_turningClosedLoopController;
 
+  // Angular offset of turning motor determined by absolute encoder
   private double m_chassisAngularOffset = 0;
   private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
 
@@ -72,9 +75,6 @@ public class SwerveModule {
         PersistMode.kPersistParameters);
 
     m_chassisAngularOffset = chassisAngularOffset;
-    // m_desiredState.angle = new Rotation2d(m_turningEncoder.getPosition());
-    // m_desiredState.angle = new
-    // Rotation2d(m_turningAbsoluteEncoder.getAbsolutePosition().getValue().in(Radians));
     m_desiredState.angle = new Rotation2d(
         Units.rotationsToRadians(m_turningAbsoluteEncoder.getAbsolutePosition().getValueAsDouble())
             - (Radians.of(m_chassisAngularOffset).in(Radians)));
@@ -124,9 +124,6 @@ public class SwerveModule {
     // Apply chassis angular offset to the encoder position to get the position
     // relative to the chassis.
     return new SwerveModuleState(m_drivingEncoder.getVelocity(),
-        // new
-        // Rotation2d(m_turningAbsoluteEncoder.getAbsolutePosition().getValue().in(Radians)
-        // - m_chassisAngularOffset));
         new Rotation2d(m_turningAbsoluteEncoder.getAbsolutePosition().getValueAsDouble()
             - (Radians.of(m_chassisAngularOffset).in(Rotations))));
   }
@@ -141,9 +138,6 @@ public class SwerveModule {
     // relative to the chassis.
     return new SwerveModulePosition(
         m_drivingEncoder.getPosition(),
-        // new
-        // Rotation2d(m_turningAbsoluteEncoder.getAbsolutePosition().getValue().in(Radians)
-        // - m_chassisAngularOffset));
         new Rotation2d(m_turningAbsoluteEncoder.getAbsolutePosition().getValueAsDouble()
             - (Radians.of(m_chassisAngularOffset).in(Rotations))));
   }
@@ -158,30 +152,18 @@ public class SwerveModule {
     SwerveModuleState correctedDesiredState = new SwerveModuleState();
     correctedDesiredState.speedMetersPerSecond = desiredState.speedMetersPerSecond;
     correctedDesiredState.angle = desiredState.angle;
-    // correctedDesiredState.angle =
-    // desiredState.angle.plus(Rotation2d.fromRadians(m_chassisAngularOffset));
 
     SmartDashboard.putString(position + " cDS", correctedDesiredState.toString());
 
     // Optimize the reference state to avoid spinning further than 90 degrees.
     // correctedDesiredState
-    // .optimize(new Rotation2d(m_turningEncoder.getPosition() -
-    // m_chassisAngularOffset));
-    
-    // correctedDesiredState
-    //     .optimize(new Rotation2d(m_turningEncoder.getPosition() * 2 * Math.PI));
-
-    // // .optimize(new
-    // //
-    // Rotation2d(m_turningAbsoluteEncoder.getAbsolutePosition().getValue().in(Radians)));
+    // .optimize(new Rotation2d(m_turningEncoder.getPosition() * 2 * Math.PI));
 
     SmartDashboard.putString(position + " cDS", correctedDesiredState.toString());
 
     // Command driving and turning SPARKS towards their respective setpoints.
     m_drivingClosedLoopController.setReference(correctedDesiredState.speedMetersPerSecond, ControlType.kVelocity);
     m_turningClosedLoopController.setReference(-correctedDesiredState.angle.getRadians(), ControlType.kPosition);
-    // m_turningClosedLoopController.setReference(correctedDesiredState.angle.getDegrees(),
-    // ControlType.kPosition);
 
     m_desiredState = desiredState;
   }

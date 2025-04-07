@@ -16,11 +16,9 @@ public final class Configs {
       // Use module constants to calculate conversion factors and feed forward gain.
       double drivingFactor = ModuleConstants.kWheelDiameterMeters * Math.PI
           / ModuleConstants.kDrivingMotorReduction;
-      // double turningFactor = 2 * Math.PI;
-      // double turningFactor = 900;
-      // double turningFactor = 19000;
-      // double turningFactor = 1 / (2 * Math.PI);
-      // double turningFactor = ((2 * Math.PI) / 900.0);
+
+      // Calculated based off of the turning gear ratio of the SDS MK4i
+      // swerve module (150/7) and conversion from rotations to radians (2pi)
       double turningFactor = (2 * Math.PI * 7.0) / 150.0;
       double drivingVelocityFeedForward = 1 / ModuleConstants.kDriveWheelFreeSpeedRps;
 
@@ -42,24 +40,15 @@ public final class Configs {
           .smartCurrentLimit(20)
           .inverted(false);
       turningConfig.encoder
-          // Invert the turning encoder, since the output shaft rotates in the opposite
-          // direction of the steering motor in the MAXSwerve Module.
-          // .inverted(true)
           .positionConversionFactor(turningFactor) // radians
           .velocityConversionFactor(turningFactor / 60.0); // radians per second
       turningConfig.closedLoop
           .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
           // These are example gains you may need to them for your own robot!
-          // .pid(1, 0, 0)
-          // .pid(5.0, 0, 0)
           .pid(1.0, 0, 0)
           .outputRange(-1, 1);
-      // Enable PID wrap around for the turning motor. This will allow the PID
-      // controller to go through 0 to get to the setpoint i.e. going from 350 degrees
-      // to 10 degrees will go through 0 rather than the other direction which is a
-      // longer route.
-      // .positionWrappingEnabled(true)
-      // .positionWrappingInputRange(0, turningFactor);
+      // MAKE SURE TO DISABLE .positionWrappingEnabled, AS THAT CAUSES STRANGE
+      // PROBLEMS THAT CAUSED HEADACHES DURING COMPETITION IN 2025
 
       armConfig
           .idleMode(IdleMode.kBrake)
@@ -68,31 +57,14 @@ public final class Configs {
       armConfig.softLimit
           .forwardSoftLimitEnabled(false)
           .reverseSoftLimitEnabled(false);
-      // armConfig.softLimit
-      // .forwardSoftLimitEnabled(true)
-      // .forwardSoftLimit(-1)
-      // .reverseSoftLimitEnabled(true)
-      // .reverseSoftLimit(1);
       armConfig.encoder
-          // Invert the turning encoder, since the output shaft rotates in the opposite
-          // direction of the steering motor in the MAXSwerve Module.
-          // .inverted(true)
           .positionConversionFactor(2 * Math.PI) // radians
           .velocityConversionFactor((Math.PI / 3) / 60.0); // radians per second
       armConfig.closedLoop
           .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
           // These are example gains you may need to them for your own robot!
           .pid(2, 0, 0)
-          // .pid(5.0, 0, 0)
-          // .pid(0.2, 0, 0.1)
           .outputRange(-1, 1);
-      // .outputRange(-0.5, 0.5);
-      // Enable PID wrap around for the turning motor. This will allow the PID
-      // controller to go through 0 to get to the setpoint i.e. going from 350 degrees
-      // to 10 degrees will go through 0 rather than the other direction which is a
-      // longer route.
-      // .positionWrappingEnabled(true)
-      // .positionWrappingInputRange(0, turningFactor);
     }
   }
 }

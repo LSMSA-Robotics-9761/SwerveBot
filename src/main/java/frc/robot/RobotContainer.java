@@ -5,32 +5,16 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-// import edu.wpi.first.wpilibj.PS4Controller.Button;
-import frc.robot.Commands.AutoDrive;
-import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.OIConstants;
-import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.Elevator;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import java.util.List;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Constants.OIConstants;
+import frc.robot.Commands.AutoDrive;
+import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Elevator;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -47,7 +31,7 @@ public class RobotContainer {
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
-  XboxController m_elevatorController = new XboxController(OIConstants.kElevatorControllerPort);
+  // The elevator controller's controller
   CommandXboxController m_elevatorCommandController = new CommandXboxController(OIConstants.kElevatorControllerPort);
 
   /**
@@ -66,20 +50,21 @@ public class RobotContainer {
                 -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
-                getToggleOrientationMode()), // TODO: Switch back to field relative
-                // false),
+                getRobotOrientationMode()),
             m_robotDrive));
     m_elevator.setDefaultCommand(new RunCommand(
-        () -> m_elevator.moveArm(
-            MathUtil.applyDeadband(m_elevatorCommandController.getRightX(), OIConstants.kDriveDeadband)),
+        () -> {
+          // Move arm of elevator with x-axis of right joystick using elevtor controller
+          m_elevator.moveArm(
+              MathUtil.applyDeadband(m_elevatorCommandController.getRightX(), OIConstants.kDriveDeadband));
+        },
         m_elevator));
-    // m_elevator.setDefaultCommand(new RunCommand(
-    //     () -> m_elevator.setPosition(
-    //         MathUtil.applyDeadband(m_elevatorCommandController.getRightY(), OIConstants.kDriveDeadband)),
-    //     m_elevator));
   }
 
-  private boolean getToggleOrientationMode() {
+  /**
+   * Allows driver to swap between field-centered and robot-centered mode.
+   */
+  private boolean getRobotOrientationMode() {
     if (m_driverController.getAButton()) {
       fieldCentered = true;
       System.out.println("Set to FIELD centered");
@@ -95,11 +80,9 @@ public class RobotContainer {
 
   /**
    * Use this method to define your button->command mappings. Buttons can be
-   * created by
-   * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its
-   * subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then calling
-   * passing it to a
+   * created by instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of
+   * its subclasses ({@linkedu.wpi.first.wpilibj.Joystick} or
+   * {@link XboxController}), and then calling passing it to a
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
@@ -107,7 +90,6 @@ public class RobotContainer {
         .whileTrue(new RunCommand(
             () -> m_robotDrive.setX(),
             m_robotDrive));
-    // Trigger xButton = m_elevatorCommandController.x();
 
     new JoystickButton(m_driverController, XboxController.Button.kRightStick.value).whileTrue(new RunCommand(
         () -> {
@@ -126,28 +108,24 @@ public class RobotContainer {
         .whileTrue(new RunCommand(() -> {
           m_elevator.setPosition(-3.0);
           System.out.println("elevator DOWN");
-          // .a() is Y on beau's controller
         }, m_elevator));
 
     m_elevatorCommandController.a()
         .whileTrue(new RunCommand(() -> {
           m_elevator.setPosition(0.0);
           System.out.println("elevator STOP");
-          // .b() is B on beau's controller
         }, m_elevator));
 
     m_elevatorCommandController.b()
         .whileTrue(new RunCommand(() -> {
           m_elevator.setPosition(10.0);
           System.out.println("elevator UP FAST");
-          // .x() is A on beau's controller
         }, m_elevator));
 
     m_elevatorCommandController.y()
         .whileTrue(new RunCommand(() -> {
           m_elevator.setPosition(7.0);
           System.out.println("elevator UP");
-          // .y() is X on beau's controller
         }, m_elevator));
 
   }
