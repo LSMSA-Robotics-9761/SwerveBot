@@ -1,49 +1,74 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Configs;
 
 public class Elevator extends SubsystemBase {
-    private final SparkMax motor;
-    private final RelativeEncoder encoder;
-    private final PIDController pid;
+  private final SparkMax motor;
+  private final RelativeEncoder encoder;
+  private final PIDController pid;
 
-    private final double COUNTS_PER_INCH = 42.0; // Example value - measure this!
-    private final double GRAVITY_COMPENSATION = 0.1; // Tune this value - usually between 0.05-0.2
+  private final SparkMax m_armMotor;
+  private final RelativeEncoder m_armEncoder;
+  private final SparkClosedLoopController m_armPID;
 
-    public Elevator() { // Replace SparkMax CANID
-        motor = new SparkMax(0, MotorType.kBrushless);
-        encoder = motor.getEncoder();
+  // You'll need to adjust this based on your elevator's gearing
+  private final double COUNTS_PER_INCH = 42.0; // Example value - measure this!
+  private final double GRAVITY_COMPENSATION = 0.1; // Tune this value - usually between 0.05-0.2
 
-        // PID values need tuning for your specific elevator
-        pid = new PIDController(0.1, 0, 0);
-    }
+  public Elevator() { // Replace SparkMax CANID
+    motor = new SparkMax(11, MotorType.kBrushed);
+    encoder = motor.getEncoder();
 
-    // Returns elevator height in inches
-    public double getHeight() {
-        return encoder.getPosition() / COUNTS_PER_INCH;
-    }
+    // PID values need tuning for your specific elevator
+    pid = new PIDController(0.1, 0, 0);
 
-    public void setPosition(double targetHeight) {
-        double pidOutput = pid.calculate(getHeight(), targetHeight);
+    m_armMotor = new SparkMax(12, MotorType.kBrushless);
+    m_armEncoder = m_armMotor.getEncoder();
+    m_armPID = m_armMotor.getClosedLoopController();
 
-        // Add gravity compensation
-        // The sign is positive because we need to work against gravity
-        // You might need to flip the sign depending on your motor polarity
-        double motorOutput = pidOutput + GRAVITY_COMPENSATION;
+    m_armMotor.configure(Configs.MAXSwerveModule.armConfig, ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
+  }
 
-        // Clamp the output to valid range
-        motorOutput = Math.min(Math.max(motorOutput, -1.0), 1.0);
+  public void moveArm(double amount) {
+    SmartDashboard.putNumber("armMove", amount);
+    SmartDashboard.putNumber("armEncoderPosition", m_armEncoder.getPosition());
 
-        motor.set(motorOutput);
-    }
+    var pos = m_armEncoder.getPosition() + (amount / 2);
+    m_armPID.setReference(pos, ControlType.kPosition);
 
-    @Override
-    public void periodic() {
-        // This method will be called once per scheduler run
-        // Good place to update SmartDashboard values if needed
-    }
+    SmartDashboard.putNumber("armRefPos", pos);
+  }
+
+  public void resetArm() {
+    m_armEncoder.setPosition(0);
+  }
+
+  // Returns elevator height in inches
+  public double getHeight() {
+    return encoder.getPosition() / COUNTS_PER_INCH;
+  }
+
+  // Sets power output of elevator
+  public void setPosition(double targetHeight) {
+    double output = pid.calculate(getHeight(), targetHeight);
+    motor.set(output + GRAVITY_COMPENSATION);
+  }
+
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+    // Good place to update SmartDashboard values if needed
+  }
 }
