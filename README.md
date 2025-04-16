@@ -1,6 +1,6 @@
-# GyroSwerve
+# SwerveBot
 
-For FRC Team 9761's 2025 robot, which utilizies a swerve drive.
+For FRC Team 9761's 2025 robot, which utilizes a swerve drive.
 
 This is a modified version of the [REVrobotics MAXSwerve Java Template](https://github.com/REVrobotics/MAXSwerve-Java-Template), with a few changes for different motors, PID tuning, CANcoders, gyroscope, and elevator mechanics. The specific parts used and their dependencies are listed below.
 
